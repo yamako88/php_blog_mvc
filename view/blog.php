@@ -2,6 +2,16 @@
 ini_set('display_errors', "On");
 
 session_start();
+
+//var_dump($_POST['token']);
+//var_dump($_SESSION['token']);
+//var_dump($_POST['email']);
+
+//if(isset($_POST['token'], $_SESSION['token']) && ($_POST['token'] === $_SESSION['token'])){
+//unset($_SESSION['token']);
+//echo "きちんとしたアクセスです";
+
+
 require('../connect2.php');
 
 // データベースに接続
@@ -23,15 +33,34 @@ if (isset($_SESSION['id']) && $_SESSION['time'] + 3600 > time()) {
     $users = $pdo->prepare('SELECT * FROM users WHERE id=?');
     $users->execute(array($_SESSION['id']));
     $user = $users->fetch();
+
+
+//    }else{
+//        header('Location: ../login.php');
+//        exit();
+//    }
+
+
+//    var_dump($token);
+
+
+
 } else {
 //    ログインしていない
     header('Location: ../login.php');
     exit();
 }
+
+
+//$_SESSION['token'] = base64_encode( openssl_random_pseudo_bytes( 48));
+//$token = htmlspecialchars($_SESSION['token'], ENT_QUOTES);
+
+
+
 ?>
 
 
-
+<!--<script>alert('XSS');</script>-->
 
 
 <?php
@@ -67,8 +96,13 @@ try {
     $maxPage = ceil($cnt['cnt'] / 5);
     $page = min($page, $maxPage);
 
-    $start = ($page - 1) * 5;
+    if ($page > 0) {
+        $start = ($page - 1) * 5;
+    }else{
+        $start = ($page);
+    }
 
+//var_dump($start);
 
 
 
@@ -135,7 +169,7 @@ header('Content-Type: text/html; charset=utf-8');
                 <a class="nav-link" href="tag.php">タグ</a>
             </li>
             <li class="nav-item username">
-                <a class="nav-lin　usename2">ようこそ、<?php echo htmlspecialchars($user['name'], ENT_QUOTES); ?>さん</a>
+                <a class="nav-lin　usename2">ようこそ、<?php echo htmlspecialchars($user['name'], ENT_QUOTES, 'utf-8'); ?>さん</a>
             </li>
         </ul>
         <form class="form-inline my-2 my-lg-0" action="search.php" method="get">
@@ -217,10 +251,9 @@ foreach($rows as $row) {
                 <input type="submit" value="編集" class="btn btn-primary">
             </form>
 
-            <div class="deleat"  onclick="return confirm('削除します。\nよろしいですか？');">
                 <form action="form_delete.php" method="POST">
                     <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
-                    <input type="submit" value="削除" class="btn btn-primary">
+                    <input type="submit" value="削除" class="btn btn-primary" onclick="return confirm('削除します。\nよろしいですか？');">
                 </form>
             </div>
 

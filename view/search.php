@@ -35,7 +35,6 @@ if (isset($_SESSION['id']) && $_SESSION['time'] + 3600 > time()) {
 
 <?php
 ini_set('display_errors',1);
-//require_once('db_info.php');
 
 
 // データベースに接続
@@ -52,31 +51,12 @@ $pdo = new PDO(
 
 
 if (isset($_GET['search'])) {
-    $search = htmlspecialchars($_GET['search']);
+    $search = htmlspecialchars($_GET['search'], ENT_QUOTES, 'utf-8');
     $search_value = $search;
 }else {
     $search = '';
     $search_value = '';
 }
-
-
-
-//
-//$pages = $_REQUEST['pages'];
-//if ($pages == '') {
-//    $pages = 1;
-//}
-//$pages = max($pages, 1);
-//
-////最終ページを取得する
-//$counts = $pdo->prepare("SELECT COUNT(*) AS cnt FROM (SELECT * FROM submission_form where user_id = ?) as forms left join category ON category.category_id = forms.category_id left join (select form_id, tag_id, group_concat(tag_name separator ',') as tag_name, user_id from (select * from form_tag) as form_tag left join tag on tag.id = form_tag.tag_id group by form_id) as tags on tags.form_id = forms.id where CONCAT(title, text, date, category_name, tag_name) LIKE '%$search%'");
-//$counts->bindValue(1, $_SESSION['id'], PDO::PARAM_INT);
-//$counts->execute();
-//$cnt = $counts->fetch();
-//$maxPages = ceil($cnt['cnt'] / 5);
-//$pages = min($pages, $maxPages);
-//
-//$start = ($pages - 1) * 5;
 
 
 $statement = $pdo->prepare("select * from (SELECT * FROM submission_form where user_id = ? order by id desc) as forms 
@@ -138,11 +118,9 @@ $rows = $statement->fetchAll();
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <!--                <a class="nav-link" href="#">記事 <span class="sr-only">(current)</span></a>-->
                 <a class="nav-link" href="blog.php?page=1">記事</a>
             </li>
             <li class="nav-item">
-                <!--                <a class="nav-link" href="#">投稿</a>-->
                 <a class="nav-link" href="post.php">投稿 <span class="sr-only">(current)</span></a>
 
             </li>
@@ -247,46 +225,6 @@ foreach($rows as $row) {
     <?php
 }
 ?>
-
-<?php
-//var_dump($cnt);
-//?>
-
-<!--<ul>-->
-<!--    --><?php
-//    if ($pages > 1) {
-//        ?>
-<!---->
-<!--        <a href="search.php?search=--><?php //echo($search); ?><!--?page=--><?php //echo($pages - 1); ?><!--">前へ</a>-->
-<!---->
-<!--        --><?php
-//    }else {
-//        ?>
-<!---->
-<!--        <!--        <li></li>-->
-<!---->
-<!--        --><?php
-//    }
-//    ?>
-<!--    <a>　--><?php //echo($pages); ?><!--ページ目　</a>-->
-<!--    --><?php
-//    if ($pages < $maxPages) {
-//        ?>
-<!---->
-<!--        <a href="search.php?search=--><?php //echo($search); ?><!--?pages=--><?php //echo($pages + 1); ?><!--">次へ</a>-->
-<!---->
-<!--        --><?php
-//    }else {
-//        ?>
-<!---->
-<!--        <!--        <li></li>-->
-<!---->
-<!--        --><?php
-//    }
-//    ?>
-<!--</ul>-->
-
-
 
 
 

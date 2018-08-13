@@ -36,10 +36,12 @@ if (isset($_SESSION['id']) && $_SESSION['time'] + 3600 > time()) {
 
 require('../connect2.php');
 
+$tag = htmlspecialchars($_POST['tag_name'], ENT_QUOTES, 'utf-8');
+
 
 if (!empty($_POST)) {
 //    エラー項目の確認
-    if ($_POST['tag_name'] == '') {
+    if ($tag == '') {
         $error['tag_name'] = 'blank';
     }
 
@@ -47,7 +49,7 @@ if (!empty($_POST)) {
 //    重複アカウントのチェック
     if (empty($error)) {
         $sql = $pdo->prepare('SELECT COUNT(*) AS cnt FROM tag WHERE tag_name=? and user_id=?');
-        $sql->bindValue(1, $_POST['tag_name']);
+        $sql->bindValue(1, $tag);
         $sql->bindValue(2, $_SESSION['user_id']);
         $sql->execute();
 
@@ -77,9 +79,9 @@ if (!empty($_POST)) {
     if (empty($error)) {
         $_SESSION['join'] = $_POST;
 
-        $stmt = $pdo->prepare('update tag set tag_name = :tag_name where id = :id');
-        $stmt->bindParam(':tag_name', $_POST['tag_name'], PDO::PARAM_STR);
-        $stmt->bindParam(':id', $_POST['id'], PDO::PARAM_STR);
+        $stmt = $pdo->prepare('update tag set tag_name = ? where id = ?');
+        $stmt->bindParam(1, $tag, PDO::PARAM_STR);
+        $stmt->bindParam(2, $_POST['id'], PDO::PARAM_STR);
         $stmt->execute();
         unset($_SESSION['join']);
 
@@ -153,10 +155,6 @@ if (!empty($_POST)) {
                 <a class="nav-lin　usename2">ようこそ、<?php echo htmlspecialchars($user['name'], ENT_QUOTES); ?>さん</a>
             </li>
         </ul>
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>
 
         <div class="nav-item logout">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><a href="../logout.php">ログアウト</a></button>
@@ -177,8 +175,8 @@ if (!empty($_POST)) {
     <div class="msr_text_02">
         <!--        <label>カテゴリー登録</label>-->
         <label>編集するタグ名：<?php echo $_POST['tag_name']; ?></label>
-        <input type="hidden" name="id" value="<?php echo $_POST['id']; ?>">
-        <input type="text" name="tag_name" />
+        <input type="hidden" name="id" value="<?php echo htmlspecialchars($_POST['id'], ENT_QUOTES, 'utf-8'); ?>">
+        <input type="text" name="tag_name" value="<?php echo htmlspecialchars($_POST['tag_name'], ENT_QUOTES, 'utf-8'); ?>">
         <?php if ($error['tag_name'] == 'blank'): ?>
             <p class="error">*新しいカテゴリーを入力してください</p>
         <?php endif; ?>

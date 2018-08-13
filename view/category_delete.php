@@ -37,7 +37,7 @@ if (isset($_SESSION['id']) && $_SESSION['time'] + 3600 > time()) {
 
 //投稿を削除する
 
-$del = $pdo->prepare('DELETE FROM category WHERE id=?');
+$del = $pdo->prepare('DELETE FROM category WHERE category_id=?');
 $del->bindValue(1, $_POST['id']);
 $del->execute();
 

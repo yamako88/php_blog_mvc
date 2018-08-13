@@ -55,17 +55,19 @@ $pdo = new PDO(
 
 $_SESSION['join'] = $_POST;
 
+
+$title = htmlspecialchars($_POST["title"]);
 $text = htmlspecialchars($_POST["text"]);
 //    投稿を記録する
 
 var_dump($_POST['id']);
 
-$stmt = $pdo->prepare('update submission_form set title = :title, text=:text, date=now(), category_id=:category_id, user_id=:user_id where id = :id');
-$stmt->bindParam(':title', $_POST['title'], PDO::PARAM_STR);
-$stmt->bindParam(':text', $text, PDO::PARAM_STR);
-$stmt->bindParam(':category_id', $_POST['category_id'], PDO::PARAM_STR);
-$stmt->bindParam(':user_id', $user['id'], PDO::PARAM_STR);
-$stmt->bindParam(':id', $_POST['id'], PDO::PARAM_STR);
+$stmt = $pdo->prepare('update submission_form set title = ?, text=?, date=now(), category_id=?, user_id=? where id = ?');
+$stmt->bindParam(1, $title, PDO::PARAM_STR);
+$stmt->bindParam(2, $text, PDO::PARAM_STR);
+$stmt->bindParam(3, $_POST['category_id'], PDO::PARAM_STR);
+$stmt->bindParam(4, $user['id'], PDO::PARAM_STR);
+$stmt->bindParam(5, $_POST['id'], PDO::PARAM_STR);
 
 $stmt->execute();
 //var_dump($pdo->lastInsertId('id'));
@@ -79,10 +81,9 @@ $del->bindValue(1, $_POST['id']);
 $del->execute();
 
 foreach ($tags as $val) {
-    $stmt = $pdo->prepare('insert into form_tag (form_id, tag_id) values(:form_id, :tag_id)');
-    $stmt->bindParam(':form_id', $_POST['id'], PDO::PARAM_STR);
-    $stmt->bindParam(':tag_id', $val, PDO::PARAM_STR);
-
+    $stmt = $pdo->prepare('insert into form_tag (form_id, tag_id) values(?, ?)');
+    $stmt->bindParam(1, $_POST['id'], PDO::PARAM_STR);
+    $stmt->bindParam(2, $val, PDO::PARAM_STR);
     $stmt->execute();
 }
 

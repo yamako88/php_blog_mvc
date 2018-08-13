@@ -8,7 +8,11 @@ require('connect2.php');
 
 session_start();
 
-if (!empty($_POST)) {
+//if (!empty($_POST)) {
+
+    if(isset($_POST['token'], $_SESSION['token']) && ($_POST['token'] === $_SESSION['token'])){
+unset($_SESSION['token']);
+echo "きちんとしたアクセスです";
 
 
 
@@ -39,6 +43,9 @@ if (!empty($_POST)) {
         $_SESSION['id'] = $user['id'];
         $_SESSION['time'] = time();
 
+
+
+
         header('Location: /view/blog.php?page=1'); exit();
         } else {
         $error['login'] = 'failed';
@@ -47,6 +54,21 @@ if (!empty($_POST)) {
         $error['login'] = 'blank';
     }
     }
+
+
+//安全安心なトークンを作成(32桁数)
+$TOKEN_LENGTH = 16;
+$tokenByte = openssl_random_pseudo_bytes($TOKEN_LENGTH);
+$token = bin2hex($tokenByte);
+
+//セッションに設定
+$_SESSION['token'] = $token;
+
+//$_SESSION['token'] = base64_encode( openssl_random_pseudo_bytes( 48));
+//$token = htmlspecialchars($_SESSION['token'], ENT_QUOTES);
+
+var_dump($token);
+
 
 
 ?>
@@ -114,7 +136,10 @@ if (!empty($_POST)) {
 
 
 <form class="forms" action="" method="POST">
-
+    <input type="hidden" name="token" value="<?php echo $token; ?>">
+    <?php
+    var_dump($token);
+    ?>
 
     <div class="msr_text_02">
         <label>メールアドレス</label>
@@ -144,6 +169,7 @@ if (!empty($_POST)) {
 
 
     <p class="msr_sendbtn_02">
+
         <input type="submit" name="login" value="ログイン">
     </p>
     </form>

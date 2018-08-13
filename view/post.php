@@ -1,4 +1,9 @@
 
+
+
+
+
+
 <?php
 session_start();
 
@@ -31,8 +36,111 @@ if (isset($_SESSION['id']) && $_SESSION['time'] + 3600 > time()) {
 
 ?>
 
+
 <?php
-ini_set('display_errors', "On");
+
+//ini_set('display_errors', "On");
+require('../connect2.php');
+
+//session_start();
+
+
+$title = htmlspecialchars($_POST['title'], ENT_QUOTES, 'utf-8');
+$text = htmlspecialchars($_POST['text'], ENT_QUOTES, 'utf-8');
+
+
+if (!empty($_POST)) {
+//    エラー項目の確認
+    if ($title == '') {
+        $error['title'] = 'blank';
+    }else{
+//        $error['title'] = '';
+    }
+
+    if ($_POST['text'] == '') {
+        $error['text'] = 'blank';
+    }else{
+//        $error['text'] = '';
+    }
+
+    if ($_POST['category_id'] == "選択してください") {
+        $error['category_id'] = 'blank';
+    }else{
+
+    }
+
+    if ($_POST['tags'] == '') {
+        $error['tags'] = 'blank';
+    }else{
+
+    }
+
+
+
+    // データベースに接続
+    $pdo = new PDO(
+        'mysql:dbname=php_blog;host=localhost;charset=utf8mb4',
+        'root',
+        'root',
+        [
+//            エラーの設定
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ]
+    );
+
+
+
+    if (empty($error)) {
+
+
+        $_SESSION['join'] = $_POST;
+
+//        $text = htmlspecialchars($_POST["text"]);
+//    投稿を記録する
+        $stmt = $pdo->prepare('insert into submission_form (title, text, date, category_id, user_id) values(?, ?, now(), ?, ?)');
+        $stmt->bindParam(1, $title, PDO::PARAM_STR);
+        $stmt->bindParam(2, $text, PDO::PARAM_STR);
+        $stmt->bindParam(3, $_POST['category_id'], PDO::PARAM_STR);
+        $stmt->bindParam(4, $user['id'], PDO::PARAM_STR);
+
+        $stmt->execute();
+        $tagform = $pdo->lastInsertId('id');
+
+//    投稿を記録する(中間テーブル)
+        $tags = $_POST["tags"];
+
+        foreach ($tags as $val) {
+            $stmt = $pdo->prepare('insert into form_tag (form_id, tag_id) values(?, ?)');
+            $stmt->bindParam(1, $tagform, PDO::PARAM_STR);
+            $stmt->bindParam(2, $val, PDO::PARAM_STR);
+            $stmt->execute();
+
+        }
+
+
+
+
+
+        unset($_SESSION['join']);
+
+        header('Location: blog.php?page=1');
+        exit();
+
+
+    }
+
+
+}else{
+    $error = [];
+    $error['title'] = '';
+    $error['text'] = '';
+
+}
+?>
+
+<?php
+//ini_set('display_errors', "On");
 
 try {
 
@@ -79,7 +187,7 @@ header('Content-Type: text/html; charset=utf-8');
 
 
 <?php
-ini_set('display_errors', "On");
+//ini_set('display_errors', "On");
 
 try {
 
@@ -180,10 +288,7 @@ header('Content-Type: text/html; charset=utf-8');
                 <a class="nav-lin　usename2">ようこそ、<?php echo htmlspecialchars($user['name'], ENT_QUOTES); ?>さん</a>
             </li>
         </ul>
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>
+
 
         <div class="nav-item logout">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><a href="../logout.php">ログアウト</a></button>
@@ -206,11 +311,20 @@ header('Content-Type: text/html; charset=utf-8');
 <!--投稿フォーム-->
 <div class="menyu_title">
 
-<form action="../index.php" method="POST">
+<form action="" method="POST">
     <p>タイトル</p>
     <input type = "text" name="title"><br>
+    <?php if ($error['title'] == 'blank'): ?>
+        <p class="error">*タイトルを入力してください</p>
+    <?php endif; ?>
+
     <p>テキスト</p>
     <textarea name ="text"></textarea><br/>
+    <?php if ($error['text'] == 'blank'){ ?>
+        <p class="error">*テキストを入力してください</p>
+    <?php }else{ ?>
+    <p></p>
+    <?php } ?>
 
     <p>カテゴリー</p>
     <select name="category_id">
@@ -229,11 +343,13 @@ header('Content-Type: text/html; charset=utf-8');
 
 
     <input type="hidden" name="eventId" value="save">
+    <?php if ($error['category_id'] == 'blank'): ?>
+        <p class="error">*カテゴリーを入力してください</p>
+    <?php endif; ?>
 
 <!--    改行-->
     <p></p>
 
-<!--    <form action="form_tag.php" method="POST">-->
         <p>タグ（複数回答可）:
             <?php
             foreach($rowss as $rows) {
@@ -246,9 +362,10 @@ header('Content-Type: text/html; charset=utf-8');
 
             ?>
         </p>
-<!--        <p><input type="submit" value="送信"></p>-->
-<!--    </form>-->
 
+    <?php if ($error['tags'] == 'blank'): ?>
+        <p class="error">*タグを入力してください</p>
+    <?php endif; ?>
 
 <br><br>
     <input type="submit" value="送信">

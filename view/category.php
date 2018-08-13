@@ -1,5 +1,5 @@
 <?php
-ini_set('display_errors', "On");
+//ini_set('display_errors', "On");
 
 session_start();
 require('../connect2.php');
@@ -36,9 +36,11 @@ if (isset($_SESSION['id']) && $_SESSION['time'] + 3600 > time()) {
 
 require('../connect2.php');
 
+$category = htmlspecialchars($_POST['category_name'], ENT_QUOTES, 'utf-8');
+
 if (!empty($_POST)) {
 //    エラー項目の確認
-    if ($_POST['category_name'] == '') {
+    if ($category == '') {
         $error['category_name'] = 'blank';
     }
 
@@ -46,7 +48,7 @@ if (!empty($_POST)) {
 //    重複アカウントのチェック
     if (empty($error)) {
         $sql = $pdo->prepare('SELECT COUNT(*) AS cnt FROM category WHERE category_name=? and user_id_category=?');
-        $sql->bindValue(1, $_POST['category_name']);
+        $sql->bindValue(1, $category);
         $sql->bindValue(2, $_SESSION['user_id']);
         $sql->execute();
 
@@ -78,9 +80,9 @@ if (!empty($_POST)) {
     if (empty($error)) {
         $_SESSION['join'] = $_POST;
 
-        $stmt = $pdo->prepare('insert into category (category_name, user_id_category) values(:category_name, :user_id_category)');
-        $stmt->bindParam(':category_name', $_POST['category_name'], PDO::PARAM_STR);
-        $stmt->bindParam(':user_id_category', $user['id'], PDO::PARAM_STR);
+        $stmt = $pdo->prepare('insert into category (category_name, user_id_category) values(?, ?)');
+        $stmt->bindParam(1, $category, PDO::PARAM_STR);
+        $stmt->bindParam(2, $user['id'], PDO::PARAM_STR);
         $stmt->execute();
         unset($_SESSION['join']);
 
@@ -102,7 +104,7 @@ $error['category_name'] = '';
 ?>
 
 <?php
-ini_set('display_errors', "On");
+//ini_set('display_errors', "On");
 
 try {
 
@@ -178,21 +180,15 @@ header('Content-Type: text/html; charset=utf-8');
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto menu">
             <li class="nav-item">
-                <!--                <a class="nav-link" href="#">記事 <span class="sr-only">(current)</span></a>-->
                 <a class="nav-link" href="blog.php?page=1">記事</a>
             </li>
             <li class="nav-item">
-                <!--                <a class="nav-link" href="#">投稿</a>-->
                 <a class="nav-link" href="post.php">投稿 <span class="sr-only">(current)</span></a>
 
             </li>
 
             <li class="nav-item active menu__single">
                 <a class="nav-link init-bottom" href="#">カテゴリー</a>
-<!--                <ul class="menu__second-level">-->
-<!--                    <li><a href="category.php">カテゴリー登録</a></li>-->
-<!--                    <li><a href="category_list.php">カテゴリー一覧</a></li>-->
-<!--                </ul>-->
             </li>
 
             <li class="nav-item">
@@ -202,10 +198,6 @@ header('Content-Type: text/html; charset=utf-8');
                 <a class="nav-lin　usename2">ようこそ、<?php echo htmlspecialchars($user['name'], ENT_QUOTES); ?>さん</a>
             </li>
         </ul>
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>
 
         <div class="nav-item logout">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><a href="../logout.php">ログアウト</a></button>
@@ -220,12 +212,12 @@ header('Content-Type: text/html; charset=utf-8');
 
 
 
-<form class="forms" action="" method="post">
+<form class="forms" action="" method="POST">
 
 
     <div class="msr_text_02">
         <label>カテゴリー登録</label>
-        <input type="text" name="category_name" />
+        <input type="text" name="category_name" value="<?php echo htmlspecialchars($_POST['category_name'], ENT_QUOTES, 'utf-8'); ?>" />
         <?php if ($error['category_name'] == 'blank'): ?>
             <p class="error">*カテゴリーを入力してください</p>
         <?php endif; ?>
@@ -259,10 +251,9 @@ foreach($rows as $row) {
                 <input type="submit" value="編集" class="btn btn-primary">
             </form>
 
-            <div class="deleat"  onclick="return confirm('削除します。\nよろしいですか？');">
             <form action="category_delete.php" method="post">
             <input type="hidden" name="id" value="<?php echo $row['category_id']; ?>">
-                <input type="submit" value="削除" class="btn btn-primary">
+                <input type="submit" value="削除" class="btn btn-primary" onclick="return confirm('削除します。\nよろしいですか？');">
             </form>
             </div>
 

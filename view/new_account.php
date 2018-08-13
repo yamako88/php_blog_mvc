@@ -1,6 +1,7 @@
 
 <?php
 
+
 require('../connect2.php');
 
 session_start();
@@ -18,6 +19,10 @@ if (!empty($_POST)) {
     }
     if ($_POST['password'] == '') {
         $error['password'] = 'blank';
+    }
+
+    if (filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) == false){
+        $error['email'] = 'validate';
     }
 
 
@@ -55,11 +60,12 @@ if (!empty($_POST)) {
 
     if (empty($error)) {
         $_SESSION['join'] = $_POST;
+        $password = sha1($_POST['password']);
 
-        $stmt = $pdo->prepare('insert into users (name,email,password) values(:name,:email,:password)');
-        $stmt->bindParam(':name', $_POST['name'], PDO::PARAM_STR);
-        $stmt->bindParam(':email', $_POST['email'], PDO::PARAM_STR);
-        $stmt->bindParam(':password', $_POST['password'], PDO::PARAM_STR);
+        $stmt = $pdo->prepare('insert into users (name,email,password) values(?,?,?)');
+        $stmt->bindParam(1, $_POST['name'], PDO::PARAM_STR);
+        $stmt->bindParam(2, $_POST['email'], PDO::PARAM_STR);
+        $stmt->bindParam(3, $password, PDO::PARAM_STR);
         $stmt->execute();
         unset($_SESSION['join']);
 
@@ -156,6 +162,10 @@ if (!empty($_POST)) {
                value="<?php echo htmlspecialchars($_POST['email'], ENT_QUOTES, 'utf-8'); ?>" />
         <?php if ($error['email'] == 'blank'): ?>
             <p class="error">*メールアドレスを入力してください</p>
+        <?php endif; ?>
+
+        <?php if ($error['email'] == 'validate'): ?>
+            <p class="error">*正しいメールアドレスを入力してください</p>
         <?php endif; ?>
 
         <?php if ($error['email'] == 'duplicate'): ?>

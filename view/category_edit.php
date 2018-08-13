@@ -36,10 +36,12 @@ if (isset($_SESSION['id']) && $_SESSION['time'] + 3600 > time()) {
 
 require('../connect2.php');
 
+$category = htmlspecialchars($_POST['category_name'], ENT_QUOTES, 'utf-8');
+
 
 if (!empty($_POST)) {
 //    エラー項目の確認
-    if ($_POST['category_name'] == '') {
+    if ($category == '') {
         $error['category_name'] = 'blank';
     }
 
@@ -47,7 +49,7 @@ if (!empty($_POST)) {
 //    重複アカウントのチェック
     if (empty($error)) {
         $sql = $pdo->prepare('SELECT COUNT(*) AS cnt FROM category WHERE category_name=? and user_id_category=?');
-        $sql->bindValue(1, $_POST['category_name']);
+        $sql->bindValue(1, $category);
         $sql->bindValue(2, $_SESSION['user_id']);
         $sql->execute();
 
@@ -77,9 +79,9 @@ if (!empty($_POST)) {
     if (empty($error)) {
         $_SESSION['join'] = $_POST;
 
-        $stmt = $pdo->prepare('update category set category_name = :category_name where id = :id');
-        $stmt->bindParam(':category_name', $_POST['category_name'], PDO::PARAM_STR);
-        $stmt->bindParam(':id', $_POST['id'], PDO::PARAM_STR);
+        $stmt = $pdo->prepare('update category set category_name = ? where category_id = ?');
+        $stmt->bindParam(1, $category, PDO::PARAM_STR);
+        $stmt->bindParam(2, $_POST['id'], PDO::PARAM_STR);
         $stmt->execute();
         unset($_SESSION['join']);
 
@@ -150,13 +152,9 @@ if (!empty($_POST)) {
                 <a class="nav-link" href="tag.php">タグ</a>
             </li>
             <li class="nav-item username">
-                <a class="nav-lin　usename2">ようこそ、<?php echo htmlspecialchars($user['name'], ENT_QUOTES); ?>さん</a>
+                <a class="nav-lin　usename2">ようこそ、<?php echo htmlspecialchars($user['name'], ENT_QUOTES, 'utf-8'); ?>さん</a>
             </li>
         </ul>
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>
 
         <div class="nav-item logout">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><a href="../logout.php">ログアウト</a></button>
@@ -177,8 +175,8 @@ if (!empty($_POST)) {
     <div class="msr_text_02">
 <!--        <label>カテゴリー登録</label>-->
         <label>編集するカテゴリー名：<?php echo $_POST['category_name']; ?></label>
-        <input type="hidden" name="id" value="<?php echo $_POST['id']; ?>">
-        <input type="text" name="category_name" />
+        <input type="hidden" name="id" value="<?php echo htmlspecialchars($_POST['id'], ENT_QUOTES, 'utf-8'); ?>"/>
+        <input type="text" name="category_name" value="<?php echo htmlspecialchars($_POST['category_name'], ENT_QUOTES, 'utf-8'); ?>" />
         <?php if ($error['category_name'] == 'blank'): ?>
             <p class="error">*新しいカテゴリーを入力してください</p>
         <?php endif; ?>
