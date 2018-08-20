@@ -1,36 +1,60 @@
 <?php
 
-// エラーを出力する
 ini_set('display_errors', "On");
 require_once('../../model/UserModel.php');
-require_once('../../service/validation/UsersValidation.php');
+require_once('../../service/validation/LoginValidation.php');
+
+session_start();
 
 $errors = [];
 
 if (!empty($_POST)) {
 
-    $name = $_POST['name'];
     $email = $_POST['email'];
     $password = $_POST['password'];
 
+    if (isset($_POST['token'], $_SESSION['token']) && ($_POST['token'] === $_SESSION['token'])) {
+        unset($_SESSION['token']);
 
-    // バリデーションチェック
-    $usersValidation = new UsersValidation();
-    $errors = $usersValidation->addValidation($name, $email, $password);
+        $error['login'] = '';
 
-    // バリデーションエラーがない場合
-    if (count($errors) === 0) {
-        $userModel = new UserModel();
-        $userModel->add($name, $email, $password);
-        header("Location: /thanks");
-        exit();
+        // バリデーションチェック
+        $loginValidation = new LoginValidation();
+        $errors = $loginValidation->addValidation($email, $password);
+
+
+        // バリデーションエラーがない場合
+        if (count($errors) === 0) {
+            $userModel = new UserModel();
+            $user = $userModel->login($email, $password);
+            if (count($user) > 0) {
+
+                $_SESSION['id'] = $user[0];
+                $_SESSION['time'] = time();
+
+                header("Location: /blog");
+                exit();
+            } else {
+                $errors['login'] = '';
+                $error['login'] = 'failed';
+            }
+        }
     }
-
 } else {
-    $errors['name'] = '';
-    $errors['email'] = '';
-    $errors['password'] = '';
+    $errors['login'] = '';
+    $error['login'] = '';
+
 }
+
+
+//安全安心なトークンを作成(32桁数)
+$TOKEN_LENGTH = 16;
+$tokenByte = openssl_random_pseudo_bytes($TOKEN_LENGTH);
+$token = bin2hex($tokenByte);
+
+//セッションに設定
+$_SESSION['token'] = $token;
+
 
 ?>
 
@@ -39,9 +63,6 @@ if (!empty($_POST)) {
 <html lang=“ja”>
 <head>
     <meta charset=“UFT-8”>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
     <title>phpで作ったblog</title>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
@@ -71,63 +92,49 @@ if (!empty($_POST)) {
         <ul class="navbar-nav mr-auto">
 
         </ul>
-
         <div class="nav-item logout">
-            <a href="/login">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">ログイン</button>
+            <a href="/new_account">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">新規登録</button>
             </a>
         </div>
+
 
     </div>
 </nav>
 
 
 <div class="menyu_title">
-    <h1>新規登録</h1>
+    <h1>ログイン</h1>
 </div>
 
 
-<form class="forms" action="" method="post">
+<form class="forms" action="" method="POST">
     <input type="hidden" name="token" value="<?php echo $token; ?>">
-    <div class="msr_text_02">
-        <label>ニックネーム</label>
-        <input type="text" name="name"/>
-        <?php if ($errors['name'] == 'blank'): ?>
-            <p class="error">*ニックネームを入力してください</p>
-        <?php endif; ?>
-    </div>
+
     <div class="msr_text_02">
         <label>メールアドレス</label>
-        <input type="email" name="email"/>
-        <?php if ($errors['email'] == 'blank'): ?>
-            <p class="error">*メールアドレスを入力してください</p>
+        <input type="text" name="email"/>
+
+        <?php if ($errors['login'] == 'blank'): ?>
+            <p class="error">*メールアドレスとパスワードをご記入ください</p>
         <?php endif; ?>
 
-        <?php if ($errors['email'] == 'validate'): ?>
-            <p class="error">*正しいメールアドレスを入力してください</p>
+        <?php if ($error['login'] == 'failed'): ?>
+            <p class="error">*ログインに失敗しました。正しくご記入ください。</p>
         <?php endif; ?>
-
-        <?php if ($errors['email'] == 'duplicate'): ?>
-            <p class="error">*指定されたメールアドレスはすでに登録されています</p>
-        <?php endif; ?>
-
     </div>
+
+
     <div class="msr_text_02">
         <label>パスワード</label>
-        <input type="password" name="password" maxlength="20"/>
-        <?php if ($errors['password'] == 'blank'): ?>
-            <p class="error">*パスワードを入力してください</p>
-        <?php endif; ?>
-        <?php if ($errors['password'] == 'length'): ?>
-            <p class="error">*パスワードは4文字以上で入力してください</p>
-        <?php endif; ?>
+        <input type="password" name="password"/>
     </div>
 
 
     <p class="msr_sendbtn_02">
-        <input type="submit" name="submit" value="登録する">
-    </p>
 
+        <input type="submit" name="login" value="ログイン">
+    </p>
 </form>
 
 

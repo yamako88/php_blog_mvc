@@ -1,6 +1,6 @@
 <?php
 
-require_once ('conf/Database.php');
+require_once('conf/Database.php');
 
 /**
  * Class Model
@@ -20,7 +20,7 @@ abstract class Model
     {
         try {
             $this->pdo = new PDO(
-                sprintf('mysql:host=%s;dbname=%s;charset=utf8',DataBase::HOST_NAME,DataBase::DB_NAME),
+                sprintf('mysql:host=%s;dbname=%s;charset=utf8', DataBase::HOST_NAME, DataBase::DB_NAME),
                 DataBase::DB_USER,
                 DataBase::DB_PASSWORD,
                 [
