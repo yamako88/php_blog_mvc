@@ -27,8 +27,9 @@ class UserModel extends Model
      * @param $email
      * @param $password
      */
-    public function add($name, $email, $password)
+    public function insert_users(string $name, string $email, string $password)
     {
+
         if (empty($error)) {
 
             $stmt = $this->pdo->prepare('insert into users (name, email, password) values(?, ?, ?)');
@@ -54,7 +55,7 @@ class UserModel extends Model
      * @param $password
      * @return array
      */
-    public function login($email, $password)
+    public function login(string $email, string $password)
     {
         $stmt = $this->pdo->prepare('SELECT * FROM users WHERE email=?');
 

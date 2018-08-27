@@ -28,7 +28,7 @@ class CategoryModel extends Model
      * @param $session
      * @return array
      */
-    public function show($session)
+    public function select_category(int $session)
     {
         $statement = $this->pdo->prepare("SELECT * FROM category where user_id_category = ?");
         $statement->bindValue(1, $session);
@@ -46,12 +46,12 @@ class CategoryModel extends Model
      * @param $category
      * @return array
      */
-    public function validation($session, $category)
+    public function validation(int $session, string $category)
     {
         $error = [];
 
         //    エラー項目の確認
-        if ($category == '') {
+        if (empty($category)) {
             $error['category_name'] = 'blank';
         }
 
@@ -78,7 +78,7 @@ class CategoryModel extends Model
      * @param $session
      * @param $category
      */
-    public function add($session, $category)
+    public function insert_category(int $session, string $category)
     {
         $stmt = $this->pdo->prepare('insert into category (category_name, user_id_category) values(?, ?)');
         $stmt->bindParam(1, $category, PDO::PARAM_STR);
@@ -90,7 +90,7 @@ class CategoryModel extends Model
     /**
      * @param $delete
      */
-    public function delete($delete)
+    public function delete_category(int $delete)
     {
         $del = $this->pdo->prepare('DELETE FROM category WHERE category_id=?');
         $del->bindValue(1, $delete);
@@ -102,7 +102,7 @@ class CategoryModel extends Model
      * @param $category
      * @return array
      */
-    public function validation_edit($session, $category)
+    public function validation_edit(int $session, string $category)
     {
         $error = [];
 
@@ -138,7 +138,7 @@ class CategoryModel extends Model
      * @param $category_id
      * @param $category
      */
-    public function apdate($category_id, $category)
+    public function update_category(int $category_id, string $category)
     {
         $stmt = $this->pdo->prepare('update category set category_name = ? where category_id = ?');
         $stmt->bindParam(1, $category, PDO::PARAM_STR);

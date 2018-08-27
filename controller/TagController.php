@@ -19,7 +19,7 @@ class TagController
     /**
      * タグ登録
      */
-    public function addAction()
+    public function insertAction()
     {
 
         header("Location: ./public/views/tag.php");

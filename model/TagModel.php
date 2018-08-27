@@ -28,7 +28,7 @@ class TagModel extends Model
      * @param $session
      * @return array
      */
-    public function show($session)
+    public function select_tag(int $session)
     {
         $statement = $this->pdo->prepare("SELECT * FROM tag where user_id=?");
         $statement->bindValue(1, $session);
@@ -46,12 +46,12 @@ class TagModel extends Model
      * @param $tag
      * @return array
      */
-    public function validation($session, $tag)
+    public function validation(int $session, string $tag)
     {
         $error = [];
 
         //    エラー項目の確認
-        if ($tag == '') {
+        if (empty($tag)) {
             $error['tag_name'] = 'blank';
         }
 
@@ -78,7 +78,7 @@ class TagModel extends Model
      * @param $session
      * @param $tag
      */
-    public function add($session, $tag)
+    public function insert_tag(int $session, string $tag)
     {
         $stmt = $this->pdo->prepare('insert into tag (tag_name, user_id) values(?, ?)');
         $stmt->bindParam(1, $tag, PDO::PARAM_STR);
@@ -90,7 +90,7 @@ class TagModel extends Model
     /**
      * @param $delete
      */
-    public function delete($delete)
+    public function delete_tag(int $delete)
     {
         $del = $this->pdo->prepare('DELETE FROM tag WHERE id=?');
         $del->bindValue(1, $delete);
@@ -102,12 +102,12 @@ class TagModel extends Model
      * @param $tag
      * @return array
      */
-    public function validation_edit($session, $tag)
+    public function validation_edit(int $session, string $tag)
     {
         $error = [];
 
         //    エラー項目の確認
-        if ($tag == '') {
+        if (empty($tag)) {
             $error['tag_name'] = 'blank';
         } else {
 //            $error['category_name'] = '';
@@ -138,7 +138,7 @@ class TagModel extends Model
      * @param $tag_id
      * @param $tag
      */
-    public function apdate($tag_id, $tag)
+    public function update_tag(int $tag_id, string $tag)
     {
         $stmt = $this->pdo->prepare('update tag set tag_name=? where id=?');
         $stmt->bindParam(1, $tag, PDO::PARAM_STR);

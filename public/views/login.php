@@ -22,12 +22,15 @@ if (!empty($_POST)) {
         $loginValidation = new LoginValidation();
         $errors = $loginValidation->addValidation($email, $password);
 
+//        var_dump($errors);
+//        die;
+
 
         // バリデーションエラーがない場合
-        if (count($errors) === 0) {
+        if (empty($errors)) {
             $userModel = new UserModel();
             $user = $userModel->login($email, $password);
-            if (count($user) > 0) {
+            if (!empty($user)) {
 
                 $_SESSION['id'] = $user[0];
                 $_SESSION['time'] = time();

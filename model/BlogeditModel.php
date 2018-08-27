@@ -31,7 +31,7 @@ class BlogeditModel extends Model
      * @param $postid
      * @return array
      */
-    public function selecttag($session, $postid)
+    public function select_tag(int $session, int $postid)
     {
         $stmt = $this->pdo->prepare("select form_id,tag_id,tag_name, user_id
         from (select * from form_tag where form_id=?) as form_tag left join
@@ -56,7 +56,7 @@ class BlogeditModel extends Model
      * @param $category_id
      * @param $form_id
      */
-    public function update($session, $title, $text, $category_id, $form_id)
+    public function update(int $session, string $title, string $text, int $category_id, int $form_id, array $tags)
     {
         $stmt = $this->pdo->prepare('update submission_form set title = ?, text=?, date=now(), category_id=?, user_id=? where id = ?');
         $stmt->bindParam(1, $title, PDO::PARAM_STR);
@@ -66,10 +66,6 @@ class BlogeditModel extends Model
         $stmt->bindParam(5, $form_id, PDO::PARAM_STR);
 
         $stmt->execute();
-        $tagform = $this->pdo->lastInsertId('id');
-//    投稿を記録する(中間テーブル)
-        $tags = $_POST["tags"];
-
 
         $del = $this->pdo->prepare('DELETE FROM form_tag WHERE form_id=?');
         $del->bindValue(1, $form_id);

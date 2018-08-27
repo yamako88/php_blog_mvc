@@ -19,7 +19,7 @@ class CategoryController
     /**
      * カテゴリー登録
      */
-    public function addAction()
+    public function insertAction()
     {
 
         header("Location: ./public/views/category.php");

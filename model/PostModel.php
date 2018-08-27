@@ -31,13 +31,13 @@ class PostModel extends Model
      * @param $tags
      * @param $userid
      */
-    public function posts($title, $text, $category_id, $tags, $userid)
+    public function insert(string $title, string $text, int $category_id, array $tags, int $session)
     {
         $stmt = $this->pdo->prepare('insert into submission_form (title, text, date, category_id, user_id) values(?, ?, now(), ?, ?)');
         $stmt->bindParam(1, $title, PDO::PARAM_STR);
         $stmt->bindParam(2, $text, PDO::PARAM_STR);
         $stmt->bindParam(3, $category_id, PDO::PARAM_STR);
-        $stmt->bindParam(4, $userid, PDO::PARAM_STR);
+        $stmt->bindParam(4, $session, PDO::PARAM_STR);
 
         $stmt->execute();
         $tagform = $this->pdo->lastInsertId('id');
@@ -57,7 +57,7 @@ class PostModel extends Model
      * @param $session
      * @return array
      */
-    public function category($session)
+    public function select_category(int $session)
     {
         $statement = $this->pdo->prepare("SELECT * FROM category where user_id_category = ?");
 
@@ -78,7 +78,7 @@ class PostModel extends Model
      * @param $session
      * @return array
      */
-    public function tag($session)
+    public function select_tag(int $session)
     {
         $statements = $this->pdo->prepare("SELECT * FROM tag where user_id = ?");
         //bindValueメソッドでパラメータをセット

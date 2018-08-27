@@ -30,9 +30,8 @@ class SessionModel extends Model
      * @param $time
      * @return mixed
      */
-    public function session($session, $time)
+    public function session(int $session, int $time)
     {
-
         if (isset($session) && $time + 3600 > time()) {
 
 //    ログインしている

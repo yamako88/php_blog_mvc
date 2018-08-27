@@ -29,7 +29,7 @@ class SearchModel extends Model
      * @param $search
      * @return array
      */
-    public function search($session, $search)
+    public function search(int $session, string $search)
     {
         $statement = $this->pdo->prepare("select * from (SELECT * FROM submission_form where user_id = ? order by id desc) as forms 
         left join category ON category.category_id = forms.category_id 

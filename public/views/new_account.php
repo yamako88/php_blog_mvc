@@ -13,20 +13,22 @@ if (!empty($_POST)) {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-
     // バリデーションチェック
     $usersValidation = new UsersValidation();
     $errors = $usersValidation->addValidation($name, $email, $password);
 
+    $errorss = array_filter($errors, 'strlen');
+
     // バリデーションエラーがない場合
-    if (count($errors) === 0) {
+    if (empty($errorss)) {
         $userModel = new UserModel();
-        $userModel->add($name, $email, $password);
+        $userModel->insert_users($name, $email, $password);
         header("Location: /thanks");
         exit();
     }
 
 } else {
+    $errors = [];
     $errors['name'] = '';
     $errors['email'] = '';
     $errors['password'] = '';

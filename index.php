@@ -23,7 +23,7 @@ switch ($url) {
         break;
     case '/post':
         $postController = new PostController();
-        $postController->addAction();
+        $postController->insertAction();
         break;
     case '/search':
         $postController = new PostController();
@@ -47,7 +47,7 @@ switch ($url) {
         break;
     case '/category':
         $categoryController = new CategoryController();
-        $categoryController->addAction();
+        $categoryController->insertAction();
         break;
     case '/category_edit':
         $categoryController = new CategoryController();
@@ -55,11 +55,10 @@ switch ($url) {
         break;
     case '/tag':
         $tagController = new TagController();
-        $tagController->addAction();
+        $tagController->insertAction();
         break;
     case '/tag_edit':
         $tagController = new TagController();
         $tagController->editAction();
         break;
 }
-

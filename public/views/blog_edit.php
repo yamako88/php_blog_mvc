@@ -24,11 +24,11 @@ if (empty($user)) {
 
 //カテゴリー表示
 $postModel = new PostModel();
-$rows = $postModel->category($session);
+$rows = $postModel->select_category($session);
 
 //タグ表示
 $postModel = new PostModel();
-$rowss = $postModel->tag($session);
+$rowss = $postModel->select_tag($session);
 
 
 //選択してるタグの表示
@@ -37,7 +37,7 @@ if (!empty($_POST['edit'])) {
     $postid = $_POST['id'];
 
     $blogeditModel = new BlogeditModel();
-    $forms = $blogeditModel->selecttag($session, $postid);
+    $forms = $blogeditModel->select_tag($session, $postid);
 
 }
 
@@ -52,9 +52,11 @@ if (!empty($_POST['update'])) {
         $text = htmlspecialchars($_POST["text"], ENT_QUOTES, 'utf-8');
         $category_id = $_POST['category_id'];
         $form_id = $_POST['id'];
+        //    投稿を記録する(中間テーブル)
+        $tags = $_POST["tags"];
 
         $blogeditModel = new BlogeditModel();
-        $update = $blogeditModel->update($session, $title, $text, $category_id, $form_id);
+        $update = $blogeditModel->update($session, $title, $text, $category_id, $form_id, $tags);
 
         header('Location: /blog');
         exit();
@@ -107,7 +109,7 @@ $_SESSION['token'] = $token;
                 <a class="nav-link" href="/blog">記事</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/post">投稿 <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/post">投稿</a>
 
             </li>
 

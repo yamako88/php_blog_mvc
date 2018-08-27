@@ -21,7 +21,7 @@ if (empty($user)) {
 
 //カテゴリー一覧表示
 $tagModel = new TagModel();
-$rows = $tagModel->show($session);
+$rows = $tagModel->select_tag($session);
 
 
 $error = [];
@@ -41,7 +41,7 @@ if (!empty($_POST['tag_name'])) {
 //    カテゴリー登録
         if (empty($error)) {
             $tagModel = new TagModel();
-            $add = $tagModel->add($session, $tag);
+            $add = $tagModel->insert_tag($session, $tag);
 
             header('Location: /tag');
             exit();
@@ -64,7 +64,7 @@ if (!empty($_POST['delete'])) {
         $delete = $_POST['delete'];
 
         $tagModel = new TagModel();
-        $rows = $tagModel->delete($delete);
+        $rows = $tagModel->delete_tag($delete);
 
         header('Location: /tag');
         exit();
@@ -117,7 +117,7 @@ $_SESSION['token'] = $token;
                 <a class="nav-link" href="/blog">記事</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/post">投稿 <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/post">投稿</a>
 
             </li>
             <li class="nav-item">
@@ -175,7 +175,7 @@ foreach ($rows as $row) {
             <h3 class="card-title"><?php echo $row['tag_name']; ?></h3>
 
             <form action="tag_edit.php" method="post">
-                <input type="hidden" name="tag_name" value="<?php echo $row['tag_name']; ?>">
+                <input type="hidden" name="tag_name_now" value="<?php echo $row['tag_name']; ?>">
                 <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
                 <input type="submit" value="編集" class="btn btn-primary">
             </form>

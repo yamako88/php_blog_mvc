@@ -13,14 +13,14 @@ class LoginValidation
      * @param $password
      * @return array
      */
-    public function addValidation($email, $password)
+    public function addValidation(string $email, string $password)
     {
         $errors = [];
 
-        if ($email == '') {
+        if (empty($email)) {
             $errors['login'] = 'blank';
         }
-        if ($password == '') {
+        if (empty($password)) {
             $errors['login'] = 'blank';
         }
 

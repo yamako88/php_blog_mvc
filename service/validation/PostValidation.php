@@ -16,17 +16,17 @@ class PostValidation
      * @param $tags
      * @return array
      */
-    public function addValidation($title, $text, $category_id, $tags)
+    public function addValidation(string $title, string $text, string $category_id, array $tags)
     {
         $error = [];
 
-        if ($title == '') {
+        if (empty($title)) {
             $error['title'] = 'blank';
         } else {
             $error['title'] = null;
         }
 
-        if ($text == '') {
+        if (empty($text)) {
             $error['text'] = 'blank';
         } else {
             $error['text'] = null;
@@ -38,7 +38,7 @@ class PostValidation
             $error['category_id'] = null;
         }
 
-        if ($tags == '') {
+        if (empty($tags)) {
             $error['tags'] = 'blank';
         } else {
             $error['tags'] = null;

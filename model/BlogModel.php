@@ -30,9 +30,9 @@ class BlogModel extends Model
      * @param $page
      * @return array
      */
-    public function pages($session, $page)
+    public function pages(int $session, int $page)
     {
-        if ($page == '') {
+        if (empty($page)) {
             $page = 1;
         }
         $page = max($page, 1);
@@ -64,7 +64,7 @@ class BlogModel extends Model
      * @param $start
      * @return array
      */
-    public function blog($session, $start)
+    public function blog(int $session,int $start)
     {
 
 
@@ -95,7 +95,7 @@ class BlogModel extends Model
      * @param $rowid
      * @return array
      */
-    public function tag($session, $rowid)
+    public function tag(int $session, int $rowid)
     {
 
 
@@ -122,7 +122,7 @@ class BlogModel extends Model
     /**
      * @param $delete
      */
-    public function delete($delete)
+    public function delete(int $delete)
     {
         $del = $this->pdo->prepare('DELETE FROM submission_form WHERE id=?');
         $del->bindValue(1, $delete);

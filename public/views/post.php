@@ -22,11 +22,11 @@ if (empty($user)) {
 
 //カテゴリー表示
 $postModel = new PostModel();
-$rows = $postModel->category($session);
+$rows = $postModel->select_category($session);
 
 //タグ表示
 $postModel = new PostModel();
-$rowss = $postModel->tag($session);
+$rowss = $postModel->select_tag($session);
 
 $error = [];
 
@@ -45,10 +45,9 @@ if (!empty($_POST)) {
         if (!empty($_POST['tags'])) {
             $tags = $_POST['tags'];
         } else {
-            $tags = '';
+            $tags = [];
         }
 
-        $userid = $user['id'];
 
         $postValidation = new PostValidation();
         $error = $postValidation->addValidation($title, $text, $category_id, $tags);
@@ -59,7 +58,7 @@ if (!empty($_POST)) {
         if (empty($errors)) {
 
             $postModel = new PostModel();
-            $post = $postModel->posts($title, $text, $category_id, $tags, $userid);
+            $post = $postModel->insert($title, $text, $category_id, $tags, $session);
 
             header('Location: /blog');
             exit();
@@ -120,7 +119,7 @@ $_SESSION['token'] = $token;
                 <a class="nav-link" href="/blog">記事</a>
             </li>
             <li class="nav-item active">
-                <a class="nav-link" href="#">投稿 <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="#">投稿</a>
 
             </li>
             <li class="nav-item">
@@ -164,7 +163,7 @@ $_SESSION['token'] = $token;
         <?php if ($error['text'] == 'blank') { ?>
             <p class="error">*テキストを入力してください</p>
         <?php } elseif ($error['text'] == null) { ?>
-            <p>haha</p>
+            <p></p>
         <?php } ?>
 
         <p>カテゴリー</p>

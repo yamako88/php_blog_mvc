@@ -13,7 +13,6 @@ class PostController
      */
     public function __construct()
     {
-//        parent::__construct();
 
     }
 
@@ -33,8 +32,6 @@ class PostController
     public function editAction()
     {
 
-        var_dump($_POST['title']);
-
         header("Location: ./public/views/blog_edit.php");
         exit;
     }
@@ -43,7 +40,7 @@ class PostController
     /**
      *記事投稿
      */
-    public function addAction()
+    public function insertAction()
     {
 
         header("Location: ./public/views/post.php");

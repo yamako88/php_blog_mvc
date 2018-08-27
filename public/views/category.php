@@ -21,7 +21,7 @@ if (empty($user)) {
 
 //カテゴリー一覧表示
 $categoryModel = new CategoryModel();
-$rows = $categoryModel->show($session);
+$rows = $categoryModel->select_category($session);
 
 
 $error = [];
@@ -41,7 +41,7 @@ if (!empty($_POST['category_name'])) {
 //    カテゴリー登録
         if (empty($error)) {
             $categoryModel = new CategoryModel();
-            $add = $categoryModel->add($session, $category);
+            $add = $categoryModel->insert_category($session, $category);
 
             header('Location: /category');
             exit();
@@ -64,7 +64,7 @@ if (!empty($_POST['delete'])) {
         $delete = $_POST['delete'];
 
         $categoryModel = new CategoryModel();
-        $rows = $categoryModel->delete($delete);
+        $rows = $categoryModel->delete_category($delete);
 
         header('Location: /category');
         exit();
@@ -118,7 +118,7 @@ $_SESSION['token'] = $token;
                 <a class="nav-link" href="blog.php?page=1">記事</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/post">投稿 <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/post">投稿</a>
 
             </li>
 
@@ -179,7 +179,7 @@ foreach ($rows as $row) {
             <h3 class="card-title"><?php echo $row['category_name']; ?></h3>
 
             <form action="category_edit.php" method="post">
-                <input type="hidden" name="category_name" value="<?php echo $row['category_name']; ?>">
+                <input type="hidden" name="category_name_now" value="<?php echo $row['category_name']; ?>">
                 <input type="hidden" name="id" value="<?php echo $row['category_id']; ?>">
                 <input type="submit" value="編集" class="btn btn-primary">
             </form>

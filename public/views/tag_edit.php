@@ -38,7 +38,7 @@ if (!empty($_POST)) {
         if (empty($error)) {
 
             $tagModel = new TagModel();
-            $update = $tagModel->apdate($tag_id, $tag);
+            $update = $tagModel->update_tag($tag_id, $tag);
 
             header('Location: /tag');
             exit();
@@ -98,7 +98,7 @@ $_SESSION['token'] = $token;
                 <a class="nav-link" href="/blog">記事</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/post">投稿 <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/post">投稿</a>
             </li>
             <li class="nav-item menu__single">
                 <a class="nav-link init-bottom" href="/category">カテゴリー</a>
@@ -125,7 +125,8 @@ $_SESSION['token'] = $token;
 
 
     <div class="msr_text_02">
-        <label>編集するタグ名：<?php echo $_POST['tag_name']; ?></label>
+        <label>編集するタグ名：<?php echo $_POST['tag_name_now']; ?></label>
+        <input type="hidden" name="tag_name_now" value="<?php echo $_POST['tag_name_now']; ?>">
         <input type="hidden" name="token" value="<?php echo $token; ?>">
         <input type="hidden" name="id" value="<?php echo htmlspecialchars($_POST['id'], ENT_QUOTES, 'utf-8'); ?>">
         <input type="text" name="tag_name">

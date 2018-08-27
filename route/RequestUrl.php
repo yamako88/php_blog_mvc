@@ -34,7 +34,9 @@ class RequestUrl
         $base_url = $this->getBaseUrl();
         $request_uri = $_SERVER['REQUEST_URI'];
 
-        if (false !== ($pos = strpos($request_uri, '?'))) {
+        $pos = strpos($request_uri, '?');
+
+        if (false !== $pos) {
             //GETパラメータを削除
             $request_uri = substr($request_uri, 0, $pos);
         }

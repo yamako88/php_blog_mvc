@@ -103,7 +103,7 @@ $_SESSION['token'] = $token;
                 <a class="nav-link" href="#">記事</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/post">投稿 <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/post">投稿</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/category">カテゴリー</a>
@@ -166,7 +166,7 @@ foreach ($rows as $row) {
                 } ?></p>
 
             <form action="blog_edit.php" method="POST">
-                <!--                <input type="hidden" name="token" value="--><?php //echo $token; ?><!--">-->
+                <input type="hidden" name="token" value="<?php echo $token; ?>">
                 <input type="hidden" name="title" value="<?php echo $row['title']; ?>">
                 <input type="hidden" name="text" value="<?php echo $text; ?>">
                 <input type="hidden" name="category_name" value="<?php echo $row['category_name']; ?>">

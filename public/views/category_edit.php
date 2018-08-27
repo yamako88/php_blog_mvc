@@ -38,7 +38,7 @@ if (!empty($_POST)) {
         if (empty($error)) {
 
             $categoryModel = new CategoryModel();
-            $update = $categoryModel->apdate($category_id, $category);
+            $update = $categoryModel->update_category($category_id, $category);
 
             header('Location: /category');
             exit();
@@ -97,7 +97,7 @@ $_SESSION['token'] = $token;
                 <a class="nav-link" href="/blog">記事</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/post">投稿 <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/post">投稿</a>
 
             </li>
 
@@ -131,7 +131,8 @@ $_SESSION['token'] = $token;
 
     <div class="msr_text_02">
         <!--        <label>カテゴリー登録</label>-->
-        <label>編集するカテゴリー名：<?php echo $_POST['category_name']; ?></label>
+        <label>編集するカテゴリー名：<?php echo $_POST['category_name_now']; ?></label>
+        <input type="hidden" name="category_name_now" value="<?php echo $_POST['category_name_now']; ?>">
         <input type="hidden" name="token" value="<?php echo $token; ?>">
         <input type="hidden" name="id" value="<?php echo $_POST['id']; ?>"/>
         <input type="text" name="category_names"/>
